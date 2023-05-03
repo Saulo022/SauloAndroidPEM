@@ -7,11 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sauloandroidpem.movies.data.network.response.MovieResponse
 import com.example.sauloandroidpem.movies.domain.MoviesUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MovieViewModel :ViewModel() {
-
-    val moviesUseCase = MoviesUseCase()
+@HiltViewModel
+class MovieViewModel @Inject constructor(private val moviesUseCase: MoviesUseCase):ViewModel() {
 
     private val _movieList = MutableLiveData<MutableList<MovieResponse>>()
     val movieList : LiveData<MutableList<MovieResponse>> = _movieList

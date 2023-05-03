@@ -16,9 +16,10 @@ import com.example.sauloandroidpem.movies.ui.MoviesScreen
 import com.example.sauloandroidpem.ui.theme.SauloAndroidPEMTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    //private val movieViewModel:MovieViewModel by viewModels()
+    private val movieViewModel:MovieViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MoviesScreen(MovieViewModel())
+                    MoviesScreen(movieViewModel)
                 }
             }
         }
