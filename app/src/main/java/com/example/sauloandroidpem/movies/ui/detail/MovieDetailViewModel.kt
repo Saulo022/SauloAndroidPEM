@@ -1,4 +1,4 @@
-package com.example.sauloandroidpem.movies.ui
+package com.example.sauloandroidpem.movies.ui.detail
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -12,9 +12,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MovieViewModel @Inject constructor(private val moviesUseCase: MoviesUseCase):ViewModel() {
+class  MovieDetailViewModel @Inject constructor(private val moviesUseCase: MoviesUseCase): ViewModel() {
 
-    private val _movieList = MutableLiveData<MutableList<MovieResponse>>()
+
+    private  val _movieList = MutableLiveData<MutableList<MovieResponse>>()
     val movieList : LiveData<MutableList<MovieResponse>> = _movieList
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -28,5 +29,10 @@ class MovieViewModel @Inject constructor(private val moviesUseCase: MoviesUseCas
             Log.i("Saulo", result[0].title)
         }
         _isLoading.value = false
+    }
+
+    fun getMovieById(id: Int): MovieResponse? {
+        val currentMovies = movieList.value
+        return currentMovies?.find { it.id == id }
     }
 }

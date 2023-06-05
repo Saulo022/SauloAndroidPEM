@@ -2,7 +2,7 @@ package com.example.sauloandroidpem.movies.data.network.response
 
 import androidx.room.PrimaryKey
 
-data class MovieResponse(
+data class MovieResponse (
     val adult: Boolean,
     val backdrop_path: String,
     val id: Int,

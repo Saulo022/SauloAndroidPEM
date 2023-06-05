@@ -1,9 +1,8 @@
 package com.example.sauloandroidpem.movies.ui
 
 import android.annotation.SuppressLint
-import android.util.Size
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,22 +13,19 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.example.sauloandroidpem.Routes
 import com.example.sauloandroidpem.movies.data.network.response.MovieResponse
+import com.example.sauloandroidpem.movies.ui.home.HomeMovieViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MoviesScreen(movieViewModel: MovieViewModel) {
+fun MoviesScreen(navigationController: NavHostController, movieViewModel: HomeMovieViewModel) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -47,7 +43,7 @@ fun MoviesScreen(movieViewModel: MovieViewModel) {
             val movieList by movieViewModel.movieList.observeAsState()
             LazyColumn(content = {
                 items(movieList ?: emptyList()) { movie ->
-                    MovieCard(movie = movie)
+                    MovieCard(navigationController = navigationController, movie = movie)
                 }
             })
         }
@@ -57,7 +53,7 @@ fun MoviesScreen(movieViewModel: MovieViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
 @Composable
-fun MovieCard(movie: MovieResponse) {
+fun MovieCard(navigationController: NavHostController, movie: MovieResponse) {
     var isExpanded by remember { mutableStateOf(false) }
     val painter =
         rememberImagePainter(data = "https://image.tmdb.org/t/p/w780/${movie.poster_path}")
@@ -65,7 +61,8 @@ fun MovieCard(movie: MovieResponse) {
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp).clickable { navigationController.navigate(
+                Routes.MovieDetailScreen.createRoute(movie.id))}
     ) {
         Column(
             modifier = Modifier
@@ -106,8 +103,9 @@ fun MovieCard(movie: MovieResponse) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyTopAppBar() {
-    SmallTopAppBar(title = { Text(text = "Movies") })
+    TopAppBar(title = { Text(text = "Movies") })
 }
 

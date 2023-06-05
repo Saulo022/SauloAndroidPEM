@@ -7,19 +7,24 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.sauloandroidpem.movies.ui.MovieViewModel
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.sauloandroidpem.movies.ui.home.HomeMovieViewModel
 import com.example.sauloandroidpem.movies.ui.MoviesScreen
+import com.example.sauloandroidpem.movies.ui.detail.MovieDetailScreen
+import com.example.sauloandroidpem.movies.ui.detail.MovieDetailViewModel
 import com.example.sauloandroidpem.ui.theme.SauloAndroidPEMTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val movieViewModel:MovieViewModel by viewModels()
+    private val movieViewModel: HomeMovieViewModel by viewModels()
+    private val movieDetailViewModel: MovieDetailViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,7 +34,22 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MoviesScreen(movieViewModel)
+                    val navigationController = rememberNavController()
+                    NavHost(
+                        navController = navigationController,
+                        startDestination = Routes.MoviesScreen.route
+                    ) {
+                        composable(Routes.MoviesScreen.route) {
+                            MoviesScreen(navigationController, movieViewModel)
+                        }
+                        composable(Routes.MovieDetailScreen.route, arguments = listOf(navArgument("name"){type = NavType.IntType})) { backStackEntry ->
+                            MovieDetailScreen(
+                                navigationController,
+                                backStackEntry.arguments?.getInt("name") ?: 0,
+                                movieDetailViewModel
+                            )
+                        }
+                    }
                 }
             }
         }
