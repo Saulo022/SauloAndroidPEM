@@ -1,4 +1,4 @@
-package com.example.sauloandroidpem.core.di
+package com.example.sauloandroidpem.core.di.network
 
 import com.example.sauloandroidpem.movies.data.network.MovieClient
 import dagger.Module

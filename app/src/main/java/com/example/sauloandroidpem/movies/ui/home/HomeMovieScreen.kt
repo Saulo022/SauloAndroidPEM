@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
@@ -22,11 +23,8 @@ import com.example.sauloandroidpem.Routes
 import com.example.sauloandroidpem.movies.data.network.response.MovieResponse
 import com.example.sauloandroidpem.movies.ui.home.HomeMovieViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MoviesScreen(navigationController: NavHostController, movieViewModel: HomeMovieViewModel) {
-
+fun HomeMovieScreen(navController: NavController, movieViewModel: HomeMovieViewModel) {
     Box(modifier = Modifier.fillMaxSize()) {
 
         val isLoading: Boolean by movieViewModel.isLoading.observeAsState(initial = false)
@@ -43,7 +41,7 @@ fun MoviesScreen(navigationController: NavHostController, movieViewModel: HomeMo
             val movieList by movieViewModel.movieList.observeAsState()
             LazyColumn(content = {
                 items(movieList ?: emptyList()) { movie ->
-                    MovieCard(navigationController = navigationController, movie = movie)
+                    MovieCard(navController = navController, movie = movie)
                 }
             })
         }
@@ -51,9 +49,8 @@ fun MoviesScreen(navigationController: NavHostController, movieViewModel: HomeMo
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
 @Composable
-fun MovieCard(navigationController: NavHostController, movie: MovieResponse) {
+fun MovieCard(navController: NavController, movie: MovieResponse) {
     var isExpanded by remember { mutableStateOf(false) }
     val painter =
         rememberImagePainter(data = "https://image.tmdb.org/t/p/w780/${movie.poster_path}")
@@ -61,7 +58,7 @@ fun MovieCard(navigationController: NavHostController, movie: MovieResponse) {
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp).clickable { navigationController.navigate(
+            .padding(horizontal = 16.dp, vertical = 8.dp).clickable { navController.navigate(
                 Routes.MovieDetailScreen.createRoute(movie.id))}
     ) {
         Column(
