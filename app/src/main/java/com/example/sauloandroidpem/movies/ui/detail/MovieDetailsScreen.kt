@@ -1,5 +1,7 @@
 package com.example.sauloandroidpem.movies.ui.detail
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,31 +64,31 @@ fun MovieDetailScreen(
         }
         is MoviesUiState.Success -> {
 
+
             movieDetailViewModel.getMovies()
             val movie = movieDetailViewModel.getMovieById(name)
 
+
             if (movie != null) {
-                InfoMovie(movie = movie)
-
-
-                val checkedState = remember { mutableStateOf(false) }
 
                 val movies = (uiState as MoviesUiState.Success).movies
+                Log.d(TAG, "Esto es un mensaje de debug" + name)
                 val position = movies.indexOfFirst { it.id == name}
+                Log.d(TAG, "Esto es un mensaje de debug" + position)
 
-                //HeartCheckBox(checked = checkedState.value, onCheckedChange = { checkedState.value = it })
-                if (position == -1) {
-                    HeartCheckBox(
-                        checked = checkedState.value,
-                        onCheckedChange = { movieDetailViewModel.onCheckBoxSelected((uiState as MoviesUiState.Success).movies[0]) },
-                        favMovie = movie,
-                        onMovieAdded = {  movieDetailViewModel.addFavMovie(movie)   })
+
+                if (position == -1 ) {
+                    movieDetailViewModel.addFavMovie(movie)
                 }
-                HeartCheckBox(
-                    checked = (uiState as MoviesUiState.Success).movies[position].selected,
-                    onCheckedChange = { movieDetailViewModel.onCheckBoxSelected((uiState as MoviesUiState.Success).movies[position]) },
-                    favMovie = movie,
-                    onMovieAdded = { })
+
+                InfoMovie(movie = movie)
+
+                    HeartCheckBox(
+                        checked = (uiState as MoviesUiState.Success).movies[position].selected,
+                        onCheckedChange = { movieDetailViewModel.onCheckBoxSelected((uiState as MoviesUiState.Success).movies[position]) }
+                    )
+
+
             }
         }
     }
@@ -184,8 +186,6 @@ fun InfoMovie(movie: MovieResponse) {
 fun HeartCheckBox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    favMovie: MovieResponse,
-    onMovieAdded: (MovieResponse) -> Unit,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
 ) {

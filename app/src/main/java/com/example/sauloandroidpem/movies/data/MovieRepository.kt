@@ -32,27 +32,35 @@ class MovieRepository @Inject constructor(
         }
     }
 
-    suspend fun addFavMovie(favMovieModel: FavMovieModel) {
-        movieDao.addFavMovie(
-            FavMovieEntity(
-                favMovieModel.id,
-                favMovieModel.title,
-                favMovieModel.vote_average,
-                favMovieModel.backdrop_path,
-                favMovieModel.selected
+    val allMovies: Flow<List<FavMovieModel>> = movieDao.getAllMovies().map { items ->
+        items.map {
+            FavMovieModel(
+                it.id,
+                it.title,
+                it.vote_average,
+                it.backdrop_path,
+                it.selected
             )
-        )
+        }
+    }
+
+    suspend fun addFavMovie(favMovieModel: FavMovieModel) {
+        movieDao.addFavMovie(favMovieModel.toData())
     }
 
     suspend fun updateFavMovie(favMovieModel: FavMovieModel) {
         movieDao.updateFavMovie(
-            FavMovieEntity(
-                favMovieModel.id,
-                favMovieModel.title,
-                favMovieModel.vote_average,
-                favMovieModel.backdrop_path,
-                favMovieModel.selected
-            )
+            favMovieModel.toData()
         )
     }
+
+    suspend fun deleteFavMovie(favMovieModel: FavMovieModel) {
+        movieDao.deleteFavMovie(
+            favMovieModel.toData()
+        )
+    }
+}
+
+fun FavMovieModel.toData(): FavMovieEntity {
+    return FavMovieEntity(this.id, this.title, this.vote_average, this.backdrop_path, this.selected)
 }

@@ -6,10 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sauloandroidpem.movies.data.network.response.MovieResponse
-import com.example.sauloandroidpem.movies.domain.AddFavMoviesUseCase
-import com.example.sauloandroidpem.movies.domain.GetFavMoviesUseCase
-import com.example.sauloandroidpem.movies.domain.MoviesUseCase
-import com.example.sauloandroidpem.movies.domain.UpdateFavMoviesUseCase
+import com.example.sauloandroidpem.movies.domain.*
 import com.example.sauloandroidpem.movies.ui.model.FavMovieModel
 import com.example.sauloandroidpem.movies.ui.model.MoviesUiState
 import com.example.sauloandroidpem.movies.ui.model.MoviesUiState.Success
@@ -23,10 +20,10 @@ class MovieDetailViewModel @Inject constructor(
     private val moviesUseCase: MoviesUseCase,
     private val addFavMoviesUseCase: AddFavMoviesUseCase,
     private val updateFavMoviesUseCase: UpdateFavMoviesUseCase,
-    getFavMoviesUseCase: GetFavMoviesUseCase
+    getAllMoviesUseCase: GetAllMoviesUseCase
 ) : ViewModel() {
 
-    val uiState: StateFlow<MoviesUiState> = getFavMoviesUseCase().map(::Success)
+    val uiState: StateFlow<MoviesUiState> = getAllMoviesUseCase().map(::Success)
         .catch { MoviesUiState.Error(it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MoviesUiState.Loading)
 
@@ -59,8 +56,7 @@ class MovieDetailViewModel @Inject constructor(
                     id = movie.id,
                     title = movie.title,
                     vote_average = movie.vote_average,
-                    backdrop_path = movie.backdrop_path,
-                    selected = true
+                    backdrop_path = movie.backdrop_path
                 )
             )
         }
