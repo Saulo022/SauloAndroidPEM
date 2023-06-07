@@ -12,41 +12,84 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.moviecomposeapp.detail.presentation.components.DetailDescriptor
 import com.example.sauloandroidpem.movies.data.network.response.MovieResponse
+import com.example.sauloandroidpem.movies.ui.favourite.FavMoviesList
+import com.example.sauloandroidpem.movies.ui.model.FavMovieModel
+import com.example.sauloandroidpem.movies.ui.model.MoviesUiState
 
 
 @Composable
 fun MovieDetailScreen(
     name: Int,
-    movieDetailViewModel: MovieDetailViewModel
+    movieDetailViewModel: MovieDetailViewModel,
 ) {
-    movieDetailViewModel.getMovies()
-    val movie = movieDetailViewModel.getMovieById(name)
 
-    if (movie != null) {
-        InfoMovie(movie = movie)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    val uiState by produceState<MoviesUiState>(
+        initialValue = MoviesUiState.Loading,
+        key1 = lifecycle,
+        key2 = movieDetailViewModel
+    ) {
+        lifecycle.repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+            movieDetailViewModel.uiState.collect {
+                value = it
+            }
+        }
     }
 
-    val checkedState = remember { mutableStateOf(false) }
+    when (uiState) {
+        is MoviesUiState.Error -> {}
+        MoviesUiState.Loading -> {
+            CircularProgressIndicator()
+        }
+        is MoviesUiState.Success -> {
 
-    HeartCheckBox(checked = checkedState.value, onCheckedChange = { checkedState.value = it })
+            movieDetailViewModel.getMovies()
+            val movie = movieDetailViewModel.getMovieById(name)
 
+            if (movie != null) {
+                InfoMovie(movie = movie)
+
+
+                val checkedState = remember { mutableStateOf(false) }
+
+                val movies = (uiState as MoviesUiState.Success).movies
+                val position = movies.indexOfFirst { it.id == name}
+
+                //HeartCheckBox(checked = checkedState.value, onCheckedChange = { checkedState.value = it })
+                if (position == -1) {
+                    HeartCheckBox(
+                        checked = checkedState.value,
+                        onCheckedChange = { movieDetailViewModel.onCheckBoxSelected((uiState as MoviesUiState.Success).movies[0]) },
+                        favMovie = movie,
+                        onMovieAdded = {  movieDetailViewModel.addFavMovie(movie)   })
+                }
+                HeartCheckBox(
+                    checked = (uiState as MoviesUiState.Success).movies[position].selected,
+                    onCheckedChange = { movieDetailViewModel.onCheckBoxSelected((uiState as MoviesUiState.Success).movies[position]) },
+                    favMovie = movie,
+                    onMovieAdded = { })
+            }
+        }
+    }
 }
 
 @Composable
@@ -141,8 +184,10 @@ fun InfoMovie(movie: MovieResponse) {
 fun HeartCheckBox(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    favMovie: MovieResponse,
+    onMovieAdded: (MovieResponse) -> Unit,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     Box(
         modifier = modifier
@@ -156,7 +201,8 @@ fun HeartCheckBox(
     ) {
         Icon(
             imageVector = if (checked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            modifier = Modifier.size(35.dp),
+            modifier = Modifier
+                .size(35.dp),
             contentDescription = "Heart",
             tint = Color.Red
         )

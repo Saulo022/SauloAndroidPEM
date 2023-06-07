@@ -9,6 +9,7 @@ import com.example.sauloandroidpem.movies.data.network.response.MovieResponse
 import com.example.sauloandroidpem.movies.domain.AddFavMoviesUseCase
 import com.example.sauloandroidpem.movies.domain.GetFavMoviesUseCase
 import com.example.sauloandroidpem.movies.domain.MoviesUseCase
+import com.example.sauloandroidpem.movies.domain.UpdateFavMoviesUseCase
 import com.example.sauloandroidpem.movies.ui.model.FavMovieModel
 import com.example.sauloandroidpem.movies.ui.model.MoviesUiState
 import com.example.sauloandroidpem.movies.ui.model.MoviesUiState.Success
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class MovieDetailViewModel @Inject constructor(
     private val moviesUseCase: MoviesUseCase,
     private val addFavMoviesUseCase: AddFavMoviesUseCase,
+    private val updateFavMoviesUseCase: UpdateFavMoviesUseCase,
     getFavMoviesUseCase: GetFavMoviesUseCase
 ) : ViewModel() {
 
@@ -62,5 +64,17 @@ class MovieDetailViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun onCheckBoxSelected(favMovieModel: FavMovieModel) {
+        viewModelScope.launch {
+            updateFavMoviesUseCase(favMovieModel.copy(selected = !favMovieModel.selected))
+        }
+    }
+
+    fun getListPos(id: Int): Int {
+        val movies = (uiState as MoviesUiState.Success).movies
+        val position = movies.indexOfFirst { it.id == id}
+        return position
     }
 }

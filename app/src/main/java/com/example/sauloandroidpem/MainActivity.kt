@@ -18,6 +18,7 @@ import com.example.sauloandroidpem.movies.ui.home.HomeMovieViewModel
 import com.example.sauloandroidpem.movies.ui.detail.MovieDetailScreen
 import com.example.sauloandroidpem.movies.ui.detail.MovieDetailViewModel
 import com.example.sauloandroidpem.movies.ui.favourite.FavMoviesViewModel
+import com.example.sauloandroidpem.movies.ui.model.FavMovieModel
 import com.example.sauloandroidpem.ui.theme.SauloAndroidPEMTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
     private val movieViewModel: HomeMovieViewModel by viewModels()
     private val movieDetailViewModel: MovieDetailViewModel by viewModels()
     private val favMoviesViewModel : FavMoviesViewModel by viewModels()
+
 
     lateinit var navController: NavHostController
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,11 +40,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+
+
                     NavigationPage(
                         homeMovieViewModel = movieViewModel,
                         movieDetailViewModel = movieDetailViewModel,
-                        favMoviesViewModel = favMoviesViewModel
-                    )
+                        favMoviesViewModel = favMoviesViewModel)
                     /*
                     val navigationController = rememberNavController()
                     NavHost(

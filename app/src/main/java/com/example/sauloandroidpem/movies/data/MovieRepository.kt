@@ -43,4 +43,16 @@ class MovieRepository @Inject constructor(
             )
         )
     }
+
+    suspend fun updateFavMovie(favMovieModel: FavMovieModel) {
+        movieDao.updateFavMovie(
+            FavMovieEntity(
+                favMovieModel.id,
+                favMovieModel.title,
+                favMovieModel.vote_average,
+                favMovieModel.backdrop_path,
+                favMovieModel.selected
+            )
+        )
+    }
 }

@@ -21,6 +21,7 @@ import com.example.sauloandroidpem.movies.ui.detail.MovieDetailViewModel
 import com.example.sauloandroidpem.movies.ui.favourite.FavMoviesScreen
 import com.example.sauloandroidpem.movies.ui.favourite.FavMoviesViewModel
 import com.example.sauloandroidpem.movies.ui.home.HomeMovieViewModel
+import com.example.sauloandroidpem.movies.ui.model.FavMovieModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
